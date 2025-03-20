@@ -1,0 +1,15 @@
+#pragma once
+
+#include "CoreMinimal.h"
+
+// Define logging category
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_FATAL, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_GameManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_UIManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_AudioManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_ControlsManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_PlayerManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_WorldManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_ReferenceManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_MessageManager, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogCORE_Minimal, Log, All);
