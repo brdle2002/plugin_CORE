@@ -13,6 +13,9 @@
 #include "Engine/LocalPlayer.h"
 #include "Engine/AssetManager.h"
 
+
+/** INITIALIZATION **/
+
 void UCORE_GameManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -20,49 +23,48 @@ void UCORE_GameManager::Initialize(FSubsystemCollectionBase& Collection)
     ConstructManagers();
 }
 
-void UCORE_GameManager::Deinitialize()
+void UCORE_GameManager::ConstructManagers()
 {
-	UE_LOG(LogCORE_GameManager, Log, TEXT("Deinitializing..."));
+    // Get the Asset Manager from the engine
+    UAssetManager* AssetManager = &UAssetManager::Get();
 
-	Super::Deinitialize();
-}
+    // Create a FPrimaryAssetType to represent the ManagerDefinition asset type
+    FPrimaryAssetType ManagerDefinitionAssetType = FPrimaryAssetType(FName(TEXT("ManagerDefinition")));
 
-void UCORE_GameManager::RegisterReferenceByID(FGameplayTag Tag, UObject* Object)
-{
-    if (Object)
+    // Get the list of all assets that match the ManagerDefinition asset type
+    TArray<FAssetData> AssetDataList;
+    AssetManager->GetPrimaryAssetDataList(ManagerDefinitionAssetType, AssetDataList);
+
+    // Loop through each asset found
+    for (const FAssetData& AssetData : AssetDataList)
     {
-        ObjectReferences.Add(Tag, Object);
+        // Check that the asset is valid and is of the correct type
+        if (AssetData.IsValid() && AssetData.AssetClassPath == UCORE_Manager_DA::StaticClass()->GetClassPathName())
+        {
+            // Load the asset synchronously (use synchronous loading to ensure it's ready)
+            UCORE_Manager_DA* ManagerDataAsset = Cast<UCORE_Manager_DA>(AssetData.GetAsset());
+            if (ManagerDataAsset)
+            {
+                // Instantiate the manager class specified in the ManagerDataAsset
+                TSubclassOf<UCORE_Manager_Base> ManagerClass = ManagerDataAsset->ManagerClass;
+                if (ManagerClass)
+                {
+                    UCORE_Manager_Base* ManagerInstance = NewObject<UCORE_Manager_Base>(this, ManagerClass);
 
-        UE_LOG(LogCORE_GameManager, Log, TEXT("Reference registered to: %s"), *Tag.ToString());
+                    if (ManagerInstance)
+                    {
+                        // Initialize the manager instance
+                        ManagerInstance->Initialize(ManagerDataAsset->ManagerID, ManagerDataAsset->ManagerName);
+
+                        // Register the reference
+                        RegisterReferenceByID(ManagerDataAsset->ManagerID, ManagerInstance);
+
+                        // UE_LOG(LogCORE_GameManager, Log, TEXT("Created Manager: %s with ID: %s"), *ManagerDataAsset->ManagerName, *ManagerDataAsset->ManagerID.ToString());
+                    }
+                }
+            }
+        }
     }
-    else
-    {
-        UE_LOG(LogCORE_GameManager, Warning, TEXT("Object invalid. Failed to register: %s"), *Tag.ToString());
-    }
-}
-
-UObject* UCORE_GameManager::GetReferenceByID(FGameplayTag Tag) const
-{
-    if (const UObject* FoundObject = ObjectReferences.FindRef(Tag))
-    {
-        return const_cast<UObject*>(FoundObject);
-    }
-    return nullptr;
-}
-
-void UCORE_GameManager::UpdateGameAttributeTags(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags)
-{
-    // Remove specified tags
-    GameAttributeTags.RemoveTags(RemoveTags);
-
-    // Add specified tags
-    GameAttributeTags.AppendTags(AddTags);
-
-    // Log the changes
-    UE_LOG(LogCORE_GameManager, Log, TEXT("Updated GameAttributeTags. Current Tags: %s"), *GameAttributeTags.ToStringSimple());
-
-    // Broadcast the delegate to notify other systems
-    OnGameAttributeTagsUpdated.Broadcast(GameAttributeTags);
 }
 
 void UCORE_GameManager::WorldReady()
@@ -77,14 +79,69 @@ void UCORE_GameManager::WorldReady()
     }
 }
 
-/*
-FOnGamePhaseUpdatedDelegate& UCORE_GameManager::OnGamePhaseUpdatedChecked()
+void UCORE_GameManager::LoadEntryLevel()
 {
-    FOnGamePhaseUpdatedDelegate* Result = &OnGamePhaseUpdated;
-    check(Result);
-    return *Result;
+    UGameInstance* GameInstance = GetGameInstance();
+    if (!GameInstance) return;
+
+    UWorld* World = GameInstance->GetWorld();  // Get the world context
+    if (!World) return;
+
+    // Get the entry level from project settings
+    FString EntryLevel = GetDefault<UGameMapsSettings>()->GetGameDefaultMap();
+    if (EntryLevel.IsEmpty()) return;
+
+    // Get the current level name
+    FString CurrentLevel = World->GetMapName();
+    CurrentLevel.RemoveFromStart(World->StreamingLevelsPrefix); // Removes potential "UEDPIE_0_" prefix in PIE mode
+
+    // Check if we are already in the entry level
+    if (CurrentLevel.Equals(EntryLevel, ESearchCase::IgnoreCase))
+    {
+        UE_LOG(LogCORE_GameManager, Log, TEXT("Already in Entry Level: %s"), *CurrentLevel);
+        return;
+    }
+
+    // Load the level
+    UGameplayStatics::OpenLevel(World, FName(*EntryLevel));
+    GameAttributeTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Game.State.FirstLoad")));
 }
-*/
+
+void UCORE_GameManager::Deinitialize()
+{
+	UE_LOG(LogCORE_GameManager, Log, TEXT("Deinitializing..."));
+
+	Super::Deinitialize();
+}
+
+
+/** OBJECT REFERENCE HANDLING **/
+
+void UCORE_GameManager::RegisterReferenceByID(FGameplayTag Tag, UObject* Object)
+{
+    if (Object)
+    {
+        ObjectReferenceRegistry.Add(Tag, Object);
+
+        UE_LOG(LogCORE_GameManager, Log, TEXT("Reference registered to: %s"), *Tag.ToString());
+    }
+    else
+    {
+        UE_LOG(LogCORE_GameManager, Warning, TEXT("Object invalid. Failed to register: %s"), *Tag.ToString());
+    }
+}
+
+UObject* UCORE_GameManager::GetReferenceByID(FGameplayTag Tag) const
+{
+    if (const UObject* FoundObject = ObjectReferenceRegistry.FindRef(Tag))
+    {
+        return const_cast<UObject*>(FoundObject);
+    }
+    return nullptr;
+}
+
+
+/** GAME PHASE HANDLING **/
 
 void UCORE_GameManager::StartGamePhaseTimer()
 {
@@ -94,6 +151,16 @@ void UCORE_GameManager::StartGamePhaseTimer()
 
         UE_LOG(LogCORE_GameManager, Warning, TEXT("Started Game Phase Timer."));
     }
+}
+
+void UCORE_GameManager::GamePhaseTimer()
+{
+    if(ShouldStartNextGamePhase())
+    { 
+        StartNextGamePhase();
+    }
+
+    UE_LOG(LogCORE_GameManager, Warning, TEXT("PHASE TIMER >>>>>>>>>>>>>>>>."));
 }
 
 bool UCORE_GameManager::ShouldStartNextGamePhase()
@@ -151,91 +218,20 @@ void UCORE_GameManager::StartNextGamePhase()
     */
 }
 
-/*
-void UCORE_GameManager::SetGamePhase(const FGameplayTag NewGamePhase)
+
+/** GAME ATTRIBUTE HANDLING **/
+
+void UCORE_GameManager::UpdateGameAttributeTags(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags)
 {
+    // Remove specified tags
+    GameAttributeTags.RemoveTags(RemoveTags);
 
-}
-*/
+    // Add specified tags
+    GameAttributeTags.AppendTags(AddTags);
 
-void UCORE_GameManager::ConstructManagers()
-{
-    // Get the Asset Manager from the engine
-    UAssetManager* AssetManager = &UAssetManager::Get();
+    // Log the changes
+    UE_LOG(LogCORE_GameManager, Log, TEXT("Updated GameAttributeTags. Current Tags: %s"), *GameAttributeTags.ToStringSimple());
 
-    // Create a FPrimaryAssetType to represent the ManagerDefinition asset type
-    FPrimaryAssetType ManagerDefinitionAssetType = FPrimaryAssetType(FName(TEXT("ManagerDefinition")));
-
-    // Get the list of all assets that match the ManagerDefinition asset type
-    TArray<FAssetData> AssetDataList;
-    AssetManager->GetPrimaryAssetDataList(ManagerDefinitionAssetType, AssetDataList);
-
-    // Loop through each asset found
-    for (const FAssetData& AssetData : AssetDataList)
-    {
-        // Check that the asset is valid and is of the correct type
-        if (AssetData.IsValid() && AssetData.AssetClassPath == UCORE_Manager_DA::StaticClass()->GetClassPathName())
-        {
-            // Load the asset synchronously (use synchronous loading to ensure it's ready)
-            UCORE_Manager_DA* ManagerDataAsset = Cast<UCORE_Manager_DA>(AssetData.GetAsset());
-            if (ManagerDataAsset)
-            {
-                // Instantiate the manager class specified in the ManagerDataAsset
-                TSubclassOf<UCORE_Manager_Base> ManagerClass = ManagerDataAsset->ManagerClass;
-                if (ManagerClass)
-                {
-                    UCORE_Manager_Base* ManagerInstance = NewObject<UCORE_Manager_Base>(this, ManagerClass);
-
-                    if (ManagerInstance)
-                    {
-                        // Initialize the manager instance
-                        ManagerInstance->Initialize(ManagerDataAsset->ManagerID, ManagerDataAsset->ManagerName);
-
-                        // Register the reference
-                        RegisterReferenceByID(ManagerDataAsset->ManagerID, ManagerInstance);
-
-                        // UE_LOG(LogCORE_GameManager, Log, TEXT("Created Manager: %s with ID: %s"), *ManagerDataAsset->ManagerName, *ManagerDataAsset->ManagerID.ToString());
-                    }
-                }
-            }
-        }
-    }
-}
-
-void UCORE_GameManager::LoadEntryLevel()
-{
-    UGameInstance* GameInstance = GetGameInstance();
-    if (!GameInstance) return;
-
-    UWorld* World = GameInstance->GetWorld();  // Get the world context
-    if (!World) return;
-
-    // Get the entry level from project settings
-    FString EntryLevel = GetDefault<UGameMapsSettings>()->GetGameDefaultMap();
-    if (EntryLevel.IsEmpty()) return;
-
-    // Get the current level name
-    FString CurrentLevel = World->GetMapName();
-    CurrentLevel.RemoveFromStart(World->StreamingLevelsPrefix); // Removes potential "UEDPIE_0_" prefix in PIE mode
-
-    // Check if we are already in the entry level
-    if (CurrentLevel.Equals(EntryLevel, ESearchCase::IgnoreCase))
-    {
-        UE_LOG(LogCORE_GameManager, Log, TEXT("Already in Entry Level: %s"), *CurrentLevel);
-        return;
-    }
-
-    // Load the level
-    UGameplayStatics::OpenLevel(World, FName(*EntryLevel));
-    GameAttributeTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Game.State.FirstLoad")));
-}
-
-void UCORE_GameManager::GamePhaseTimer()
-{
-    if(ShouldStartNextGamePhase())
-    { 
-        StartNextGamePhase();
-    }
-
-    UE_LOG(LogCORE_GameManager, Warning, TEXT("PHASE TIMER >>>>>>>>>>>>>>>>."));
+    // Broadcast the delegate to notify other systems
+    OnGameAttributeTagsUpdated.Broadcast(GameAttributeTags);
 }
