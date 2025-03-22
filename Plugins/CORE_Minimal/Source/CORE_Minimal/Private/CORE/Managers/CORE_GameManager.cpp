@@ -3,6 +3,8 @@
 
 #include "CORE/Managers/CORE_GameManager.h"
 #include "CORE/Managers/CORE_Manager_Base.h"
+#include "CORE/Data/CORE_MiscTypes.h"
+#include "CORE/Data/CORE_GameplayTags.h"
 #include "CORE/Data/CORE_Manager_DA.h"
 #include "CORE/Data/CORE_Logging.h"
 #include "Kismet/GameplayStatics.h"
@@ -71,9 +73,90 @@ void UCORE_GameManager::WorldReady()
     }
     else
     {
-        // Handle case where the tag IS present
+        StartGamePhaseTimer();
     }
 }
+
+/*
+FOnGamePhaseUpdatedDelegate& UCORE_GameManager::OnGamePhaseUpdatedChecked()
+{
+    FOnGamePhaseUpdatedDelegate* Result = &OnGamePhaseUpdated;
+    check(Result);
+    return *Result;
+}
+*/
+
+void UCORE_GameManager::StartGamePhaseTimer()
+{
+    if (GetWorld())
+    {
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle_GamePhaseTimer, this, &ThisClass::GamePhaseTimer, 1.f, true, 0.5f);
+
+        UE_LOG(LogCORE_GameManager, Warning, TEXT("Started Game Phase Timer."));
+    }
+}
+
+bool UCORE_GameManager::ShouldStartNextGamePhase()
+{
+    /*
+    // Checkif all registered tasks for the current phase have been completed
+    for(auto It = PhaseRestrationData.CreateConstIterator(); It; ++It)
+    {
+        if (It.Value().GamePhase.MatchesTagExact(GetGamePhase()))
+        {
+            if (!It.Value().bIsCompleted)
+            {
+                return false;
+            }
+        }
+    }
+    */
+    return false;
+}
+
+void UCORE_GameManager::StartNextGamePhase()
+{
+    /*
+    // Define the ordered phase list
+    static const TArray<FGameplayTag> PhaseOrder = {
+        TAG_Game_Phase_Initiialization,
+        TAG_Game_Phase_LoadingData,
+        TAG_Game_Phase_MainMenu,
+        TAG_Game_Phase_PreGameSetup,
+        TAG_Game_Phase_ActiveGame,
+        TAG_Game_Phase_Pause,
+        TAG_Game_Phase_GameOver,
+        TAG_Game_Phase_PostGame,
+        TAG_Game_Phase_Shutdown
+    };
+
+    // Find the index of the current phase
+    int32 CurrentIndex = PhaseOrder.IndexOfByKey(GetGamePhase());
+
+    if (CurrentIndex != INDEX_NONE && CurrentIndex + 1 < PhaseOrder.Num())
+    {
+        // Set the next phase tag
+        FGameplayTag NextPhaseTag = PhaseOrder[CurrentIndex + 1];
+        GameAttributeTags = NextPhaseTag;  // Update the current phase to the next phase
+
+        // Broadcast the change
+        // OnGamePhaseUpdated.Broadcast(NextPhaseTag);
+
+        UE_LOG(LogCORE_GameManager, Log, TEXT("Game phase updated to: %s"), *NextPhaseTag.ToString());
+    }
+    else
+    {
+        UE_LOG(LogCORE_GameManager, Warning, TEXT("No next game phase found, or already at final phase."));
+    }
+    */
+}
+
+/*
+void UCORE_GameManager::SetGamePhase(const FGameplayTag NewGamePhase)
+{
+
+}
+*/
 
 void UCORE_GameManager::ConstructManagers()
 {
@@ -145,4 +228,14 @@ void UCORE_GameManager::LoadEntryLevel()
     // Load the level
     UGameplayStatics::OpenLevel(World, FName(*EntryLevel));
     GameAttributeTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Game.State.FirstLoad")));
+}
+
+void UCORE_GameManager::GamePhaseTimer()
+{
+    if(ShouldStartNextGamePhase())
+    { 
+        StartNextGamePhase();
+    }
+
+    UE_LOG(LogCORE_GameManager, Warning, TEXT("PHASE TIMER >>>>>>>>>>>>>>>>."));
 }
