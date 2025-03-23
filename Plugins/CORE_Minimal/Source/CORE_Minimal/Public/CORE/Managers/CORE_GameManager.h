@@ -22,6 +22,8 @@ class CORE_MINIMAL_API UCORE_GameManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
+
+
 /** INITIALIZATION **/
 public:
 		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -58,11 +60,11 @@ private:
 /** GAME ATTRIBUTE HANDLING **/
 public:
 	// Update the game state with new tags to add and remove
-	UFUNCTION(BlueprintCallable, Category = "Game State")
+	UFUNCTION(BlueprintCallable, Category = "Game Attributes")
 		void UpdateGameAttributeTags(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags);
 
 	// Delegate for broadcasting changes
-	 UPROPERTY(BlueprintAssignable, Category = "Game State")
+	 UPROPERTY(BlueprintAssignable, Category = "Game Attributes")
 		FOnGameAttributeTagsUpdatedDelegate OnGameAttributeTagsUpdated;
 
 protected:

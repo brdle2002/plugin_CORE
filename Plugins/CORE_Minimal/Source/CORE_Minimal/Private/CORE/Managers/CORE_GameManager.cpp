@@ -59,6 +59,8 @@ void UCORE_GameManager::ConstructManagers()
                         // Register the reference
                         RegisterReferenceByID(ManagerDataAsset->ManagerID, ManagerInstance);
 
+                        OnGameAttributeTagsUpdated.AddDynamic(ManagerInstance, &UCORE_Manager_Base::OnGameAttributesUpdated);
+
                         // UE_LOG(LogCORE_GameManager, Log, TEXT("Created Manager: %s with ID: %s"), *ManagerDataAsset->ManagerName, *ManagerDataAsset->ManagerID.ToString());
                     }
                 }
@@ -75,7 +77,7 @@ void UCORE_GameManager::WorldReady()
     }
     else
     {
-        StartGamePhaseTimer();
+        // StartGamePhaseTimer();
     }
 }
 
@@ -160,7 +162,7 @@ void UCORE_GameManager::GamePhaseTimer()
         StartNextGamePhase();
     }
 
-    UE_LOG(LogCORE_GameManager, Warning, TEXT("PHASE TIMER >>>>>>>>>>>>>>>>."));
+    UE_LOG(LogCORE_GameManager, Log, TEXT("PHASE TIMER."));
 }
 
 bool UCORE_GameManager::ShouldStartNextGamePhase()

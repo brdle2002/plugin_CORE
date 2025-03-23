@@ -17,6 +17,10 @@ class CORE_MINIMAL_API UCORE_GameManager_BPL : public USubsystemBlueprintLibrary
 {
 	GENERATED_BODY()
 
+
+
+/** OBJECT REFERENCE HANDLING **/
+
 public:
 
 	/* Register a reference with a specific Tag. References will ONLY be stored as UObjects. Can cast to requested class if neccessary.*/
@@ -27,6 +31,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Reference Registry")
 		static UObject* GetReference(FGameplayTag ID);
 
+
+
+/** GAME ATTRIBUTE HANDLING **/
+
+public:
+
+	/* */
+	UFUNCTION(BlueprintCallable, Category = "Game Manager|Game Attributes")
+		void UpdateGameAttributeTags(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags);
+
+
+
+/** PRIVATE FUNCTIONS **/
+
+private:
 		static UCORE_GameManager* GetGameManager();
 	
 };
