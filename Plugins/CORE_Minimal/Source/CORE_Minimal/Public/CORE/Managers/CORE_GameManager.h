@@ -19,6 +19,7 @@ class CORE_MINIMAL_API UCORE_GameManager : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 
+
 /** INITIALIZATION **/
 public:
 		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
