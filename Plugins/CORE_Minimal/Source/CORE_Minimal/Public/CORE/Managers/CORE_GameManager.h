@@ -18,32 +18,34 @@ class CORE_MINIMAL_API UCORE_GameManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
-public:
 
+/** INITIALIZATION **/
+public:
 		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+		void WorldReady();
+		void LoadEntryLevel();
 		virtual void Deinitialize() override;
+
+
+
+/** OBJECT REFERENCE HANDLING **/
+public:
 		void RegisterReferenceByID(FGameplayTag Tag, UObject* Object);
 		UObject* GetReferenceByID(FGameplayTag Tag) const;
 
+private:
+		TMap<FGameplayTag, UObject*> ObjectReferences;
+
+
+
+/** GAME ATTRIBUTES HANDLING **/
+public:
 	// Update the game state with new tags to add and remove
 	UFUNCTION(BlueprintCallable, Category = "Game State")
 		void UpdateGameAttributeTags(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags);
 
-	void WorldReady();
-
-	// Delegate for broadcasting changes
-	 UPROPERTY(BlueprintAssignable, Category = "Game State")
 		FOnGameAttributeTagsUpdatedDelegate OnGameAttributeTagsUpdated;
 
-protected:
-
-
-
 private:
-
 		FGameplayTagContainer GameAttributeTags;
-		TMap<FGameplayTag, UObject*> ObjectReferences;
-
-		void ConstructManagers();
-		void LoadEntryLevel();
 };

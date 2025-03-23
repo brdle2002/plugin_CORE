@@ -3,6 +3,7 @@
 
 #include "CORE/Libraries/CORE_GameManager_BPL.h"
 #include "CORE/Managers/CORE_GameManager.h"
+#include "GameplayTagContainer.h"
 
 void UCORE_GameManager_BPL::RegisterReference(FGameplayTag ID, UObject* Object)
 {
