@@ -10,18 +10,18 @@ class UCORE_GameManager;
 struct FGameplayTag;
 
 /**
- * A library of Blueprint functions for Blueprints to interface with the Game Manager subsystem.
+ * A library of functions for blueprints to interface with the Game Manager subsystem.
  */
 UCLASS(DisplayName = "Game Manager Blueprint Library")
 class CORE_MINIMAL_API UCORE_GameManager_BPL : public USubsystemBlueprintLibrary
 {
 	GENERATED_BODY()
 
+private:
+		static UCORE_GameManager* GetGameManager();
 
-
-/** OBJECT REFERENCE HANDLING **/
 public:
-	/* Register a reference with a specific Tag. References will ONLY be stored as UObjects. Can cast to requested class if neccessary.*/
+	/* Register a reference with a specific Tag. References will ONLY be stored as UObjects. Can cast to requested class if neccessary. */
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Reference Registry", meta = (DefaultToSelf = "Object"))
 		static void RegisterReference(FGameplayTag ID, UObject* Object);
 
@@ -29,7 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Reference Registry")
 		static UObject* GetReference(FGameplayTag ID);
 
-private:
-		static UCORE_GameManager* GetGameManager();
-	
+	/* Update the game state with new tags to add and remove. */
+	UFUNCTION(BlueprintCallable, Category = "Game Manager|Game Attributes")
+		static void UpdateGameAttributes(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags);
+
 };

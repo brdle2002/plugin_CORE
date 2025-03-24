@@ -5,6 +5,18 @@
 #include "CORE/Managers/CORE_GameManager.h"
 #include "GameplayTagContainer.h"
 
+UCORE_GameManager* UCORE_GameManager_BPL::GetGameManager()
+{
+	if (UGameInstance* GameInstance = GEngine->GetCurrentPlayWorld()->GetGameInstance())
+	{
+		return GameInstance->GetSubsystem<UCORE_GameManager>();
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 void UCORE_GameManager_BPL::RegisterReference(FGameplayTag ID, UObject* Object)
 {
 	if (GetGameManager())
@@ -20,14 +32,12 @@ UObject* UCORE_GameManager_BPL::GetReference(FGameplayTag ID)
 	return GetGameManager()->GetReferenceByID(ID);
 }
 
-UCORE_GameManager* UCORE_GameManager_BPL::GetGameManager()
+void UCORE_GameManager_BPL::UpdateGameAttributes(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags)
 {
-	if (UGameInstance* GameInstance = GEngine->GetCurrentPlayWorld()->GetGameInstance())
+	if (GetGameManager())
 	{
-		return GameInstance->GetSubsystem<UCORE_GameManager>();
-	}
-	else
-	{
-		return nullptr;
+		// Call RegisterReferenceByID from the ReferenceManager
+		GetGameManager()->UpdateGameAttributeTags(AddTags, RemoveTags);
+		return;
 	}
 }

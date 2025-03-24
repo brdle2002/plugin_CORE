@@ -7,9 +7,9 @@
 #include "CORE_Settings_UIManager.generated.h"
 
 /**
- * 
+ * Settings used by the UI Manager.
  */
-UCLASS()
+UCLASS(DisplayName = "UI Manager Settings")
 class CORE_MINIMAL_API UCORE_Settings_UIManager : public UDataAsset
 {
 	GENERATED_BODY()
