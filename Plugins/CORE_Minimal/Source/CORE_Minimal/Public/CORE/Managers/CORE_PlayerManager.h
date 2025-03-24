@@ -15,9 +15,11 @@ class CORE_MINIMAL_API UCORE_PlayerManager : public ULocalPlayerSubsystem
 {
 	GENERATED_BODY()
 
-public:
 
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
+
+/** INITIALIZATION **/
+public:
+		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+		virtual void Deinitialize() override;
 	
 };

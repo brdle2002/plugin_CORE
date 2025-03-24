@@ -30,7 +30,7 @@ private:
 
 
 
-/** UI FUNCTIONS **/
+/** UI HANDLING **/
 public:
         static void RequestPlayerHUD(FGameplayTag ID);
         static void RequestGameMenu(FGameplayTag ID);

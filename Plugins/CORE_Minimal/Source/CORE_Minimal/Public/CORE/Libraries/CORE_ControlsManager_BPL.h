@@ -22,7 +22,12 @@ private:
 		static UCORE_ControlsManager* GetControlsManager();
 
 public:
-	/** Request a new Control Profile. If the selected Control Profile is already active, nothing happens. */
+	/** Request a new Control Profile. If the selected Control Profile is already active, nothing happens.
+	*
+	*  - Gameplay
+	*  - User Interface
+	*  - No Show
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Controls Manager")
 		static void RequestControlProfile(EControlProfile ControlProfile = EControlProfile::ControlProfile_NoShow);
 

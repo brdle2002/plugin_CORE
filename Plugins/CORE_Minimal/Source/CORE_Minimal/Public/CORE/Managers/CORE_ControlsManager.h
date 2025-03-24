@@ -22,6 +22,10 @@ public:
 		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 		virtual void Deinitialize() override;
 
+
+
+/** CONTROL PROFILE HANDLING **/
+public:
 		static EControlProfile GetActiveControlProfile();
 		static void RequestControlProfile(EControlProfile ControlProfile = EControlProfile::ControlProfile_NoShow);
 	

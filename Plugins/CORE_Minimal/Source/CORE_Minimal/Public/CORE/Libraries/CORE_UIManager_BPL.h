@@ -22,19 +22,31 @@ private:
 		static UCORE_UIManager* GetUIManager();
 
 public:
-    /** Request a specific PlayerHUD by ID */
+    /** Request a specific PlayerHUD by ID
+    *
+    * - Must derived from Reference.ID.HUD
+    */
     UFUNCTION(BlueprintCallable, Category = "UI Manager", meta = (Categories = "Reference.ID.HUD"))
         static void RequestPlayerHUD(FGameplayTag ID);
 
-    /** Request a specific Game Menu by ID */
+    /** Request a specific Game Menu by ID
+    *
+    * - Must derive from Reference.ID.GameMenu
+    */
     UFUNCTION(BlueprintCallable, Category = "UI Manager", meta = (Categories = "Reference.ID.GameMenu"))
         static void RequestGameMenu(FGameplayTag ID);
 
-    /** Request a specific System Menu by ID */
+    /** Request a specific System Menu by ID
+    *
+    * - Must derive from Reference.ID.SystemMenu
+    */
     UFUNCTION(BlueprintCallable, Category = "UI Manager", meta = (Categories = "Reference.ID.SystemMenu"))
         static void RequestSystemMenu(FGameplayTag ID);
 
-    /** Request a specific Modal by ID */
+    /** Request a specific Modal by ID
+    *
+    * - Must derive from Reference.ID.SystemMenu
+    */
     UFUNCTION(BlueprintCallable, Category = "UI Manager", meta = (Categories = "Reference.ID.Modal"))
         static void RequestModal(FGameplayTag ID);
 
