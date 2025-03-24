@@ -9,9 +9,15 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(DisplayName = "Audio Manager")
 class CORE_MINIMAL_API UCORE_AudioManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-	
+
+/** INITIALIZATION **/
+public:
+		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+		virtual void Deinitialize() override;
+		void SetupGameManagerBindings();
+
 };

@@ -19,55 +19,88 @@ UCORE_UIManager* UCORE_UIManager_BPL::GetUIManager()
 
 void UCORE_UIManager_BPL::RequestPlayerHUD(FGameplayTag ID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestPlayerHUD(ID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestGameMenu(FGameplayTag ID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestGameMenu(ID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestSystemMenu(FGameplayTag ID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestSystemMenu(ID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestModal(FGameplayTag ID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestModal(ID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestDisplayLayer(EDisplayLayer Layer)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestDisplayLayer(Layer);
+	}
 }
 
 void UCORE_UIManager_BPL::PushWidget(UUserWidget* Widget)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->PushWidget(Widget);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestCloseDisplay()
 {
-
+	if (GetUIManager())
+	{
+		// GetUIManager()->RequestCloseDisplay;
+	}
 }
 
 void UCORE_UIManager_BPL::RequestSimpleAnnouncement(FText Title, FText Message, float Duration, FGameplayTag AudioID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestSimpleAnnouncement(Title, Message, Duration, AudioID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestSimpleNotification(FText Title, FText Message, float Duration, FGameplayTag AudioID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestSimpleNotification(Title, Message, Duration, AudioID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestSimpleToast(FText Message, float Duration, FGameplayTag AudioID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestSimpleToast(Message, Duration, AudioID);
+	}
 }
 
 void UCORE_UIManager_BPL::RequestSimpleHeadsUpMessage(FText Message, float Duration, FGameplayTag AudioID)
 {
-
+	if (GetUIManager())
+	{
+		GetUIManager()->RequestSimpleHeadsUpMessage(Message, Duration, AudioID);
+	}
 }

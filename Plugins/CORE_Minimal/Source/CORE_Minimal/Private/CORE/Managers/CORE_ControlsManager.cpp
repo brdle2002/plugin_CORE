@@ -8,8 +8,9 @@
 /** INITIALIZATION **/
 void UCORE_ControlsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-    Super::Initialize(Collection);
     UE_LOG(LogCORE_ControlsManager, Log, TEXT("Initializing..."));
+
+    Super::Initialize(Collection);
 }
 
 void UCORE_ControlsManager::Deinitialize()
@@ -17,4 +18,14 @@ void UCORE_ControlsManager::Deinitialize()
 	UE_LOG(LogCORE_ControlsManager, Log, TEXT("Deinitializing..."));
 
 	Super::Deinitialize();
+}
+
+EControlProfile UCORE_ControlsManager::GetActiveControlProfile()
+{
+    return EControlProfile();
+}
+
+void UCORE_ControlsManager::RequestControlProfile(EControlProfile ControlProfile)
+{
+
 }
