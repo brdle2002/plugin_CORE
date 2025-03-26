@@ -3,6 +3,7 @@
 
 #include "CORE/Libraries/CORE_AudioManager_BPL.h"
 #include "CORE/Managers/CORE_AudioManager.h"
+#include "GameplayTagContainer.h"
 
 UCORE_AudioManager* UCORE_AudioManager_BPL::GetAudioManager()
 {
@@ -14,4 +15,14 @@ UCORE_AudioManager* UCORE_AudioManager_BPL::GetAudioManager()
 	{
 		return nullptr;
 	}
+}
+
+void UCORE_AudioManager_BPL::RequestAudioEvent(FGameplayTag ID, float VolumeOverride)
+{
+
+}
+
+void UCORE_AudioManager_BPL::RequestAudioEventAtLocation(FGameplayTag ID, FVector Location, float VolumeOverride)
+{
+
 }

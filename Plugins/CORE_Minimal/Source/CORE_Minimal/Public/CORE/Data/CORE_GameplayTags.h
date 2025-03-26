@@ -261,3 +261,10 @@ namespace ReferenceCore_IDs_GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_ID_Reticle);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_ID_Vitals);
 }
+
+namespace CORE_Minimal_ControlProfile_GameplayTags
+{
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Player_ControlProfile_Gameplay);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Player_ControlProfile_UserInterface);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Player_ControlProfile_NoShow);
+}

@@ -259,3 +259,10 @@ namespace ReferenceCore_IDs_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_ID_Reticle, TEXT("Reference.ID.Reticle"));
 	UE_DEFINE_GAMEPLAY_TAG(TAG_ID_Vitals, TEXT("Reference.ID.Vitals"));
 }
+
+namespace CORE_Minimal_ControlProfile_GameplayTags
+{
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Player_ControlProfile_Gameplay, TEXT("Player.ControlProfile.Gameplay"));
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Player_ControlProfile_UserInterface, TEXT("Player.ControlProfile.UserInterface"));
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Player_ControlProfile_NoShow, TEXT("Player.ControlProfile.NoShow"));
+}

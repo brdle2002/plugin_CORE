@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameMapsSettings.h"
 #include "Engine/GameInstance.h"
+#include "UObject/WeakObjectPtr.h"
 
 
 
@@ -70,7 +71,8 @@ void UCORE_GameManager::RegisterReferenceByID(FGameplayTag Tag, UObject* Object)
 {
     if (Object)
     {
-        ObjectReferences.Add(Tag, Object);
+        // Store the reference using a weak pointer
+        ObjectReferences.Add(Tag, TWeakObjectPtr<UObject>(Object));
 
         UE_LOG(LogCORE_GameManager, Log, TEXT("Reference registered to: %s"), *Tag.ToString());
     }
@@ -82,9 +84,18 @@ void UCORE_GameManager::RegisterReferenceByID(FGameplayTag Tag, UObject* Object)
 
 UObject* UCORE_GameManager::GetReferenceByID(FGameplayTag Tag) const
 {
-    if (const UObject* FoundObject = ObjectReferences.FindRef(Tag))
+    if (const TWeakObjectPtr<UObject>* WeakObjectPtr = ObjectReferences.Find(Tag))
     {
-        return const_cast<UObject*>(FoundObject);
+        if (WeakObjectPtr->IsValid())
+        {
+            return WeakObjectPtr->Get();
+        }
+        else
+        {
+            UE_LOG(LogCORE_GameManager, Warning, TEXT("Object reference for tag %s is no longer valid."), *Tag.ToString());
+
+            const_cast<TMap<FGameplayTag, TWeakObjectPtr<UObject>>&>(ObjectReferences).Remove(Tag);
+        }
     }
     return nullptr;
 }

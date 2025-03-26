@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "CORE/Data/CORE_MiscTypes.h"
+#include "GameplayTagContainer.h"
 #include "CORE_ControlsManager.generated.h"
+
 
 /**
  * 
@@ -15,18 +16,25 @@ class CORE_MINIMAL_API UCORE_ControlsManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
-
-
 /** INITIALIZATION **/
 public:
 		virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 		virtual void Deinitialize() override;
 
-
-
 /** CONTROL PROFILE HANDLING **/
 public:
-		static EControlProfile GetActiveControlProfile();
-		static void RequestControlProfile(EControlProfile ControlProfile = EControlProfile::ControlProfile_NoShow);
+	/** Request a new control profile */
+		void RequestControlProfile(FGameplayTag RequestedProfile);
+
+	/** Returns the active control profile */
+		FGameplayTag GetActiveControlProfile() const { return ControlProfile; }
+
+private:
+	/** Stores the currently active control profile */
+		FGameplayTag ControlProfile;
+
+		void SetControlProfile_Gameplay();
+		void SetControlProfile_UserInterface();
+		void SetControlProfile_NoShow();
 	
 };

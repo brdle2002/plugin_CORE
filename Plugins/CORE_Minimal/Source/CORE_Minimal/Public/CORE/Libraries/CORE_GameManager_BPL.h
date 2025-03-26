@@ -21,16 +21,21 @@ private:
 		static UCORE_GameManager* GetGameManager();
 
 public:
-	/* Register a reference with a specific Tag. References will ONLY be stored as UObjects. Can cast to requested class if neccessary. */
+	/** Register a reference with a specific Tag. References will ONLY be stored as UObjects. Can cast to requested class if neccessary.
+	  *
+	  * - ID must derive from 'Reference.ID'
+	  */
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Reference Registry", meta = (DefaultToSelf = "Object"))
 		static void RegisterReference(FGameplayTag ID, UObject* Object);
 
-	/* Get a reference by a specific Tag */
+	/** Get a reference by a specific Tag
+	  *
+	  * - ID must derive from 'Reference.ID'
+	  */
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Reference Registry")
 		static UObject* GetReference(FGameplayTag ID);
 
-	/* Update the game state with new tags to add and remove. */
+	/** Update the game state with new tags to add and remove. */
 	UFUNCTION(BlueprintCallable, Category = "Game Manager|Game Attributes")
 		static void UpdateGameAttributes(const FGameplayTagContainer& AddTags, const FGameplayTagContainer& RemoveTags);
-
 };

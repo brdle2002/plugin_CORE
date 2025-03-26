@@ -3,6 +3,7 @@
 
 #include "CORE/Managers/CORE_WorldManager.h"
 #include "CORE/Managers/CORE_GameManager.h"
+#include "CORE/Data/CORE_Logging.h"
 
 void UCORE_WorldManager::Initialize(FSubsystemCollectionBase& Collection)
 {

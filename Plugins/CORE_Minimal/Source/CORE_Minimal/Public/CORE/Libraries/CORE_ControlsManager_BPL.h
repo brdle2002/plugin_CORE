@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
-#include "CORE/Data/CORE_MiscTypes.h"
+#include "GameplayTagContainer.h"
 #include "CORE_ControlsManager_BPL.generated.h"
 
 class UCORE_ControlsManager;
-struct FGameplayTag;
+// struct FGameplayTag;
 
 /**
  * A library of functions for blueprints to interface with the Controls Manager subsystem.
@@ -24,14 +24,12 @@ private:
 public:
 	/** Request a new Control Profile. If the selected Control Profile is already active, nothing happens.
 	*
-	*  - Gameplay
-	*  - User Interface
-	*  - No Show
+	*  - Must derive from 'Player.ControlProfile'
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Controls Manager")
-		static void RequestControlProfile(EControlProfile ControlProfile = EControlProfile::ControlProfile_NoShow);
+	UFUNCTION(BlueprintCallable, Category = "Controls Manager", meta = (Categories = "Player.ControlProfile"))
+		static void RequestControlProfile(FGameplayTag ControlProfile);
 
 	/** Returns the active Control Profile. */
 	UFUNCTION(BlueprintPure, Category = "Controls Manager")
-		static EControlProfile GetActiveControlProfile();
+		static FGameplayTag GetActiveControlProfile();
 };

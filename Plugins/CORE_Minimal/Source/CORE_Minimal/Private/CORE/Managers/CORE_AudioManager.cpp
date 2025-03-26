@@ -26,3 +26,8 @@ void UCORE_AudioManager::SetupGameManagerBindings()
 {
 
 }
+
+void UCORE_AudioManager::RequestAudioEvent(FGameplayTag ID, float VolumeOverride)
+{
+
+}
